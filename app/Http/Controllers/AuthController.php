@@ -13,7 +13,9 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
-        return view('auth.login');
+        return view('auth.login', [
+            "title" => env("APP_NAME")
+        ]);
     }
 
     public function sendOtp(Request $request)
@@ -33,6 +35,18 @@ class AuthController extends Controller
         );
 
         $now = Carbon::now();
+
+        $rateLimitSeconds = 30;
+        if ($user->last_otp) {
+            $secondsSinceLast = $now->diffInSeconds($user->last_otp);
+            if ($secondsSinceLast < $rateLimitSeconds) {
+                $wait = $rateLimitSeconds - $secondsSinceLast;
+                return back()->withErrors([
+                    'email' => "Please wait {$wait} seconds before requesting another link.",
+                ]);
+            }
+        }
+
         $otpHash = $this->generateOtpHash();
 
         $user->fill([
