@@ -38,9 +38,9 @@ class AuthController extends Controller
 
         $rateLimitSeconds = 30;
         if ($user->last_otp) {
-            $secondsSinceLast = $now->diffInRealSeconds($user->last_otp);
+            $secondsSinceLast = max(0, $now->getTimestamp() - $user->last_otp->getTimestamp());
             if ($secondsSinceLast < $rateLimitSeconds) {
-                $wait = ceil($rateLimitSeconds - $secondsSinceLast);
+                $wait = $rateLimitSeconds - $secondsSinceLast;
                 return back()->withErrors([
                     'email' => "Please wait {$wait} seconds before requesting another link.",
                 ]);
