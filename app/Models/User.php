@@ -21,6 +21,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'mac_address',
+        'otp_hash',
+        'otp_consumed',
+        'last_otp',
     ];
 
     /**
@@ -43,6 +47,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'otp_consumed' => 'boolean',
+            'last_otp' => 'datetime',
         ];
     }
 }
